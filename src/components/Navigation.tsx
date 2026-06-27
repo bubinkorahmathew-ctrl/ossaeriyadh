@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import styles from './Navigation.module.css';
-import { BookOpen } from 'lucide-react';
 
 interface NavigationProps {
   userRole?: 'teacher' | 'student' | null;
@@ -12,8 +11,8 @@ export default function Navigation({ userRole, userName }: NavigationProps) {
     <header className={styles.header}>
       <div className={`container ${styles.navContainer}`}>
         <Link href="/" className={styles.logo}>
-          <BookOpen className={styles.logoIcon} />
-          <span>EduPortal</span>
+          <img src="/logo.png" alt="OSSAE Logo" className={styles.logoImage} />
+          <span>OSSAE RIYADH DISTRICT Edu PORTAL</span>
         </Link>
 
         {userRole && (

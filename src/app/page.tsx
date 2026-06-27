@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <div className={styles.main}>
       <div className={styles.heroSection}>
-        <h1 className={styles.title}>Welcome to EduPortal</h1>
+        <h1 className={styles.title}>Welcome to OSSAE RIYADH DISTRICT Edu PORTAL</h1>
         <p className={styles.subtitle}>Select an account to log in and access your portal.</p>
       </div>
 
