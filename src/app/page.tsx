@@ -9,7 +9,7 @@ export default function LandingPage() {
         <div className={styles.heroContent}>
           <h1 className={styles.title}>Nurturing Faith. Empowering Minds. Embracing Technology.</h1>
           <p className={styles.subtitle}>
-            Welcome to the official Smart Portal of the Orthodox Syrian Sunday School Association of the East (OSSAE) – Riyadh & Qassim Region. Streamlining spiritual education for our teachers, students, and parents under the prayerful guidance of the Thrissur Diocese.
+            Welcome to the official Smart Portal of the Orthodox Syrian Sunday School Association of the East (OSSAE) – Riyadh Region. Streamlining spiritual education for our teachers, students, and parents under the prayerful guidance of the Thrissur Diocese.
           </p>
           <div className={styles.ctaGroup}>
             <Link href="/login" className={styles.btnPrimary}>
@@ -110,7 +110,7 @@ export default function LandingPage() {
 
       {/* 6. Latest Announcements & Events */}
       <section className={styles.section} id="announcements">
-        <h2 className={styles.sectionTitle}>Staying Connected in the Riyadh & Qassim District</h2>
+        <h2 className={styles.sectionTitle}>Staying Connected in the Riyadh Region</h2>
         <div className={styles.announcementsList}>
           <div className={`glass-card ${styles.announcementItem}`}>
             <span className={styles.dateBadge}>NEW</span>
