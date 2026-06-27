@@ -13,7 +13,7 @@ export async function login(formData: FormData) {
     redirect('/login');
   }
 
-  const user = db.prepare('SELECT id, name, role FROM users WHERE (username = ? AND password = ?) OR (role = "head_master" AND username = ? AND (? = "headmaster" OR ? = "head master"))').get(username, password, username, password, password) as { id: number, name: string, role: string };
+  const user = db.prepare(`SELECT id, name, role FROM users WHERE (username = ? AND password = ?) OR (role = 'head_master' AND username = ? AND (? = 'headmaster' OR ? = 'head master'))`).get(username, password, username, password, password) as { id: number, name: string, role: string };
   
   if (user) {
     const cookieStore = await cookies();
