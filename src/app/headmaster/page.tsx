@@ -10,20 +10,21 @@ export default async function HeadMasterDashboard() {
     redirect('/login');
   }
 
-  // Get total stats
+  // Get total stats for their Sunday School
   const totalClasses = (db.prepare('SELECT COUNT(*) as count FROM classes').get() as any).count;
-  const totalTeachers = (db.prepare('SELECT COUNT(*) as count FROM users WHERE role = "teacher"').get() as any).count;
-  const totalStudents = (db.prepare('SELECT COUNT(*) as count FROM users WHERE role = "student"').get() as any).count;
+  const totalTeachers = (db.prepare('SELECT COUNT(*) as count FROM users WHERE role = "teacher" AND sunday_school_id = ?').get(user.sunday_school_id) as any).count;
+  const totalStudents = (db.prepare('SELECT COUNT(*) as count FROM users WHERE role = "student" AND sunday_school_id = ?').get(user.sunday_school_id) as any).count;
 
-  // Get recent documents
+  // Get recent documents for their Sunday School
   const recentDocs = db.prepare(`
     SELECT documents.*, users.name as uploader_name, classes.name as class_name 
     FROM documents 
     JOIN users ON documents.uploaded_by = users.id
     JOIN classes ON documents.class_id = classes.id
+    WHERE documents.sunday_school_id = ?
     ORDER BY created_at DESC
     LIMIT 10
-  `).all() as { id: number, title: string, uploader_name: string, class_name: string, created_at: string }[];
+  `).all(user.sunday_school_id) as { id: number, title: string, uploader_name: string, class_name: string, created_at: string }[];
 
   return (
     <div className={styles.main}>

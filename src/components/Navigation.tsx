@@ -12,8 +12,21 @@ export default function Navigation({ userRole, userName }: NavigationProps) {
       <div className={`container ${styles.navContainer}`}>
         <Link href="/" className={styles.logo}>
           <img src="/logo.png" alt="OSSAE Logo" className={styles.logoImage} />
-          <span>OSSAE RIYADH DISTRICT Edu PORTAL</span>
+          <div className={styles.logoText}>
+            <span className={styles.mainTitle}>OSSAE Riyadh District</span>
+            <span className={styles.subTitle}>Thrissur Diocese</span>
+          </div>
         </Link>
+
+        {!userRole && (
+          <nav className={styles.centerLinks}>
+            <Link href="/">Home</Link>
+            <Link href="#about">About Us</Link>
+            <Link href="#leadership">Leadership</Link>
+            <Link href="#announcements">Announcements</Link>
+            <Link href="#contact">Contact</Link>
+          </nav>
+        )}
 
         {userRole ? (
           <div className={styles.userSection}>
@@ -27,8 +40,11 @@ export default function Navigation({ userRole, userName }: NavigationProps) {
           </div>
         ) : (
           <div className={styles.userSection}>
-            <Link href="/login" className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>
-              Login
+            <Link href="/login" className={styles.teacherBtn}>
+              Teacher Login
+            </Link>
+            <Link href="/login" className={styles.studentBtn}>
+              Student Login
             </Link>
           </div>
         )}

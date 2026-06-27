@@ -39,14 +39,20 @@ export async function logout() {
 export async function getUser() {
   const cookieStore = await cookies();
   const userId = cookieStore.get('user_id')?.value;
-  const userRole = cookieStore.get('user_role')?.value;
-  const userName = cookieStore.get('user_name')?.value;
 
-  if (!userId || !userRole) return null;
+  if (!userId) return null;
 
-  return {
-    id: parseInt(userId, 10),
-    role: userRole as 'teacher' | 'student' | 'admin' | 'head_master',
-    name: userName || ''
-  };
+  try {
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as any;
+    if (!user) return null;
+
+    return {
+      id: user.id,
+      role: user.role as 'teacher' | 'student' | 'admin' | 'head_master',
+      name: user.name,
+      sunday_school_id: user.sunday_school_id || null
+    };
+  } catch (error) {
+    return null;
+  }
 }

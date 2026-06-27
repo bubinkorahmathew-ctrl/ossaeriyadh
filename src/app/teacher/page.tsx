@@ -12,17 +12,16 @@ export default async function TeacherDashboard() {
   }
 
   // Fetch classes for this teacher
-  const classes = db.prepare('SELECT id, name FROM classes WHERE teacher_id = ?').all(user.id) as { id: number, name: string }[];
-
-  // Fetch recent documents
+  const classes = db.prepare('SELECT * FROM classes').all() as { id: number, name: string }[];
+  
   const recentDocs = db.prepare(`
-    SELECT d.id, d.title, d.file_path, d.created_at, c.name as class_name 
-    FROM documents d
-    JOIN classes c ON d.class_id = c.id
-    WHERE d.uploaded_by = ?
-    ORDER BY d.created_at DESC
+    SELECT documents.*, classes.name as class_name 
+    FROM documents 
+    JOIN classes ON documents.class_id = classes.id
+    WHERE documents.uploaded_by = ?
+    ORDER BY created_at DESC
     LIMIT 5
-  `).all(user.id) as { id: number, title: string, file_path: string, created_at: string, class_name: string }[];
+  `).all(user.id) as { id: number, title: string, file_path: string, class_name: string, created_at: string }[];
 
   return (
     <div className={styles.dashboard}>
@@ -33,6 +32,7 @@ export default async function TeacherDashboard() {
           <h2>Upload a Document</h2>
           <form action={uploadDocument} className={styles.form}>
             <input type="hidden" name="uploaderId" value={user.id} />
+            <input type="hidden" name="sundaySchoolId" value={user.sunday_school_id || ''} />
             
             <div className="form-group">
               <label className="form-label">Select Class</label>

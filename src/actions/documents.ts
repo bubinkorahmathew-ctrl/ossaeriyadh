@@ -12,8 +12,9 @@ export async function uploadDocument(formData: FormData) {
   const description = formData.get('description') as string;
   const classId = formData.get('classId') as string;
   const uploaderId = formData.get('uploaderId') as string;
+  const sundaySchoolId = formData.get('sundaySchoolId') as string;
 
-  if (!file || !title || !classId || !uploaderId) {
+  if (!file || !title || !classId || !uploaderId || !sundaySchoolId) {
     throw new Error('Missing required fields');
   }
 
@@ -31,11 +32,11 @@ export async function uploadDocument(formData: FormData) {
   await writeFile(filepath, buffer);
 
   const insertDoc = db.prepare(`
-    INSERT INTO documents (title, description, file_path, class_id, uploaded_by) 
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO documents (title, description, file_path, class_id, sunday_school_id, uploaded_by) 
+    VALUES (?, ?, ?, ?, ?, ?)
   `);
   
-  insertDoc.run(title, description, `/uploads/${filename}`, classId, uploaderId);
+  insertDoc.run(title, description, `/uploads/${filename}`, classId, sundaySchoolId, uploaderId);
 
   revalidatePath('/teacher');
   revalidatePath('/student');

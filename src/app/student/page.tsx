@@ -12,12 +12,11 @@ export default async function StudentDashboard() {
 
   // Fetch classes this student is enrolled in
   const classes = db.prepare(`
-    SELECT c.id, c.name, t.name as teacher_name
+    SELECT c.id, c.name
     FROM classes c
     JOIN enrollments e ON c.id = e.class_id
-    JOIN users t ON c.teacher_id = t.id
     WHERE e.student_id = ?
-  `).all(user.id) as { id: number, name: string, teacher_name: string }[];
+  `).all(user.id) as { id: number, name: string }[];
 
   const classIds = classes.map(c => c.id);
   
@@ -29,9 +28,9 @@ export default async function StudentDashboard() {
       SELECT d.id, d.title, d.description, d.file_path, d.created_at, d.class_id, u.name as teacher_name
       FROM documents d
       JOIN users u ON d.uploaded_by = u.id
-      WHERE d.class_id IN (${placeholders})
+      WHERE d.class_id IN (${placeholders}) AND d.sunday_school_id = ?
       ORDER BY d.created_at DESC
-    `).all(...classIds) as any[];
+    `).all(...classIds, user.sunday_school_id) as any[];
   }
 
   return (
@@ -48,7 +47,6 @@ export default async function StudentDashboard() {
               {classes.map(c => (
                 <li key={c.id} className={styles.classItem}>
                   <strong>{c.name}</strong>
-                  <span className={styles.teacherName}>Instructor: {c.teacher_name}</span>
                 </li>
               ))}
             </ul>

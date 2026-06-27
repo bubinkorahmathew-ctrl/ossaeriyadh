@@ -2,29 +2,33 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 
+// Initialize the database connection
+// In a real Next.js app, we should be careful with SQLite in serverless environments,
+// but for a local prototype or a long-running Node server, this works perfectly.
 const dbPath = path.join(process.cwd(), 'portal.db');
+const isFirstRun = !fs.existsSync(dbPath);
 
-// Ensure the database file exists
-if (!fs.existsSync(dbPath)) {
-  fs.writeFileSync(dbPath, '');
-}
+const db = new Database(dbPath);
 
-const db = new Database(dbPath, { verbose: console.log });
-
-// Initialize database schema
-export function initDB() {
-  const schema = `
-    CREATE TABLE IF NOT EXISTS users (
+// Initialize schema and seed data if this is the first run
+if (isFirstRun) {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS sunday_schools (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      role TEXT NOT NULL CHECK(role IN ('teacher', 'student', 'admin', 'head_master'))
+      name TEXT NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS classes (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
-      teacher_id INTEGER NOT NULL,
-      FOREIGN KEY(teacher_id) REFERENCES users(id)
+      role TEXT NOT NULL CHECK(role IN ('teacher', 'student', 'admin', 'head_master')),
+      sunday_school_id INTEGER,
+      FOREIGN KEY(sunday_school_id) REFERENCES sunday_schools(id)
     );
 
     CREATE TABLE IF NOT EXISTS enrollments (
@@ -41,42 +45,47 @@ export function initDB() {
       description TEXT,
       file_path TEXT NOT NULL,
       class_id INTEGER NOT NULL,
+      sunday_school_id INTEGER NOT NULL,
       uploaded_by INTEGER NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(class_id) REFERENCES classes(id),
+      FOREIGN KEY(sunday_school_id) REFERENCES sunday_schools(id),
       FOREIGN KEY(uploaded_by) REFERENCES users(id)
     );
-  `;
+  `);
 
-  db.exec(schema);
+  console.log("Seeding initial data...");
 
-  // Seed data if empty
-  const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number };
-  if (userCount.count === 0) {
-    console.log("Seeding initial data...");
-    
-    // Create users
-    const insertUser = db.prepare('INSERT INTO users (name, role) VALUES (?, ?)');
-    const adminId = insertUser.run('System Admin', 'admin').lastInsertRowid;
-    const headMasterId = insertUser.run('Principal Johnson', 'head_master').lastInsertRowid;
-    const teacherId = insertUser.run('Mr. Smith', 'teacher').lastInsertRowid;
-    const student1Id = insertUser.run('Alice Johnson', 'student').lastInsertRowid;
-    const student2Id = insertUser.run('Bob Williams', 'student').lastInsertRowid;
-
-    // Create a class
-    const insertClass = db.prepare('INSERT INTO classes (name, teacher_id) VALUES (?, ?)');
-    const mathClassId = insertClass.run('Advanced Mathematics', teacherId).lastInsertRowid;
-    const physicsClassId = insertClass.run('Physics 101', teacherId).lastInsertRowid;
-
-    // Enroll students
-    const insertEnrollment = db.prepare('INSERT INTO enrollments (student_id, class_id) VALUES (?, ?)');
-    insertEnrollment.run(student1Id, mathClassId);
-    insertEnrollment.run(student1Id, physicsClassId);
-    insertEnrollment.run(student2Id, mathClassId);
+  // Seed Sunday Schools (1 to 6)
+  const insertSchool = db.prepare('INSERT INTO sunday_schools (name) VALUES (?)');
+  for (let i = 1; i <= 6; i++) {
+    insertSchool.run(`Sunday School ${i}`);
   }
-}
 
-// Ensure the schema is initialized when this file is imported
-initDB();
+  // Seed Classes (Jesus Kid, Class 1 to 12)
+  const insertClass = db.prepare('INSERT INTO classes (name) VALUES (?)');
+  insertClass.run('Jesus Kid');
+  for (let i = 1; i <= 12; i++) {
+    insertClass.run(`Class ${i}`);
+  }
+
+  // Create Users
+  const insertUser = db.prepare('INSERT INTO users (name, role, sunday_school_id) VALUES (?, ?, ?)');
+  
+  // Admin has no specific sunday school
+  const adminId = insertUser.run('System Admin', 'admin', null).lastInsertRowid;
+  
+  // Assign to Sunday School 1
+  const headMasterId = insertUser.run('Principal Johnson', 'head_master', 1).lastInsertRowid;
+  const teacherId = insertUser.run('Mr. Smith', 'teacher', 1).lastInsertRowid;
+  const student1Id = insertUser.run('Alice Johnson', 'student', 1).lastInsertRowid;
+  const student2Id = insertUser.run('Bob Williams', 'student', 1).lastInsertRowid;
+
+  // Enroll students in classes
+  const insertEnrollment = db.prepare('INSERT INTO enrollments (student_id, class_id) VALUES (?, ?)');
+  // Assuming Class ID 1 = Jesus Kid, 2 = Class 1, etc.
+  insertEnrollment.run(student1Id, 2); // Class 1
+  insertEnrollment.run(student2Id, 3); // Class 2
+}
 
 export default db;

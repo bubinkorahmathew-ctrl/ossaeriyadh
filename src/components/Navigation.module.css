@@ -19,16 +19,81 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #fff;
+  text-decoration: none;
 }
 
 .logoImage {
-  height: 40px;
+  height: 44px;
   width: auto;
   object-fit: contain;
+}
+
+.logoText {
+  display: flex;
+  flex-direction: column;
+}
+
+.mainTitle {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.subTitle {
+  font-size: 0.8rem;
+  color: #a0a3b0;
+  font-weight: 500;
+}
+
+.centerLinks {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.centerLinks a {
+  color: #a0a3b0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.centerLinks a:hover {
+  color: #fff;
+}
+
+.teacherBtn {
+  background-color: #800020; /* Deep Maroon */
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.teacherBtn:hover {
+  background-color: #5e0017;
+}
+
+.studentBtn {
+  background-color: transparent;
+  color: #FFBF00; /* Gold/Amber */
+  border: 1px solid #FFBF00;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.studentBtn:hover {
+  background-color: rgba(255, 191, 0, 0.1);
 }
 
 .userSection {
