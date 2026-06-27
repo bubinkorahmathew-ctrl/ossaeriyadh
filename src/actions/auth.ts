@@ -18,8 +18,12 @@ export async function login(formData: FormData) {
     
     if (user.role === 'teacher') {
       redirect('/teacher');
-    } else {
+    } else if (user.role === 'student') {
       redirect('/student');
+    } else if (user.role === 'admin') {
+      redirect('/admin');
+    } else if (user.role === 'head_master') {
+      redirect('/headmaster');
     }
   }
 }
@@ -42,7 +46,7 @@ export async function getUser() {
 
   return {
     id: parseInt(userId, 10),
-    role: userRole as 'teacher' | 'student',
+    role: userRole as 'teacher' | 'student' | 'admin' | 'head_master',
     name: userName || ''
   };
 }

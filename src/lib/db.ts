@@ -17,7 +17,7 @@ export function initDB() {
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
-      role TEXT NOT NULL CHECK(role IN ('teacher', 'student'))
+      role TEXT NOT NULL CHECK(role IN ('teacher', 'student', 'admin', 'head_master'))
     );
 
     CREATE TABLE IF NOT EXISTS classes (
@@ -57,6 +57,8 @@ export function initDB() {
     
     // Create users
     const insertUser = db.prepare('INSERT INTO users (name, role) VALUES (?, ?)');
+    const adminId = insertUser.run('System Admin', 'admin').lastInsertRowid;
+    const headMasterId = insertUser.run('Principal Johnson', 'head_master').lastInsertRowid;
     const teacherId = insertUser.run('Mr. Smith', 'teacher').lastInsertRowid;
     const student1Id = insertUser.run('Alice Johnson', 'student').lastInsertRowid;
     const student2Id = insertUser.run('Bob Williams', 'student').lastInsertRowid;

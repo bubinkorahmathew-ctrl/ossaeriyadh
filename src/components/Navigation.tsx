@@ -2,7 +2,7 @@ import Link from 'next/link';
 import styles from './Navigation.module.css';
 
 interface NavigationProps {
-  userRole?: 'teacher' | 'student' | null;
+  userRole?: 'teacher' | 'student' | 'admin' | 'head_master' | null;
   userName?: string | null;
 }
 
