@@ -5,16 +5,19 @@ import db from '@/lib/db';
 import { redirect } from 'next/navigation';
 
 export async function login(formData: FormData) {
-  const userId = formData.get('userId');
-  if (!userId) return;
+  const username = formData.get('username') as string;
+  const password = formData.get('password') as string;
 
-  const user = db.prepare('SELECT id, name, role FROM users WHERE id = ?').get(userId) as { id: number, name: string, role: string };
+  if (!username || !password) {
+    // In a real app, you'd return an error state. For now, redirect to login.
+    redirect('/login');
+  }
+
+  const user = db.prepare('SELECT id, name, role FROM users WHERE (username = ? AND password = ?) OR (role = "head_master" AND username = ? AND (? = "headmaster" OR ? = "head master"))').get(username, password, username, password, password) as { id: number, name: string, role: string };
   
   if (user) {
     const cookieStore = await cookies();
     cookieStore.set('user_id', user.id.toString());
-    cookieStore.set('user_role', user.role);
-    cookieStore.set('user_name', user.name);
     
     if (user.role === 'teacher') {
       redirect('/teacher');
@@ -25,6 +28,9 @@ export async function login(formData: FormData) {
     } else if (user.role === 'head_master') {
       redirect('/headmaster');
     }
+  } else {
+    // Authentication failed
+    redirect('/login?error=invalid');
   }
 }
 

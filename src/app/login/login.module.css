@@ -24,12 +24,41 @@
   color: #a0a3b0;
 }
 
-.loginGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2rem;
+.loginContainer {
   width: 100%;
-  max-width: 800px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.demoCredentials {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  color: #a0a3b0;
+  font-size: 0.9rem;
+}
+
+.demoCredentials p {
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+
+.demoCredentials ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.demoCredentials li {
+  margin-bottom: 0.25rem;
+}
+
+.demoCredentials code {
+  background: rgba(255,255,255,0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #FFBF00;
+  font-family: monospace;
 }
 
 .cardTitle {

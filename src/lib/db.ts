@@ -26,6 +26,8 @@ if (isFirstRun) {
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
+      username TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
       role TEXT NOT NULL CHECK(role IN ('teacher', 'student', 'admin', 'head_master')),
       sunday_school_id INTEGER,
       FOREIGN KEY(sunday_school_id) REFERENCES sunday_schools(id)
@@ -69,17 +71,19 @@ if (isFirstRun) {
     insertClass.run(`Class ${i}`);
   }
 
-  // Create Users
-  const insertUser = db.prepare('INSERT INTO users (name, role, sunday_school_id) VALUES (?, ?, ?)');
+  // Create Users with demo credentials
+  const insertUser = db.prepare('INSERT INTO users (name, username, password, role, sunday_school_id) VALUES (?, ?, ?, ?, ?)');
   
   // Admin has no specific sunday school
-  const adminId = insertUser.run('System Admin', 'admin', null).lastInsertRowid;
+  const adminId = insertUser.run('System Admin', 'admin', 'admin', 'admin', null).lastInsertRowid;
   
   // Assign to Sunday School 1
-  const headMasterId = insertUser.run('Principal Johnson', 'head_master', 1).lastInsertRowid;
-  const teacherId = insertUser.run('Mr. Smith', 'teacher', 1).lastInsertRowid;
-  const student1Id = insertUser.run('Alice Johnson', 'student', 1).lastInsertRowid;
-  const student2Id = insertUser.run('Bob Williams', 'student', 1).lastInsertRowid;
+  const headMasterId = insertUser.run('Principal Johnson', 'headmaster', 'headmaster', 'head_master', 1).lastInsertRowid;
+  // Let's allow either "headmaster" or "head master" as password for headmaster by just matching it later or relying on what they type. The DB has 'headmaster'.
+  
+  const teacherId = insertUser.run('Mr. Smith', 'teacher', 'teacher', 'teacher', 1).lastInsertRowid;
+  const student1Id = insertUser.run('Alice Johnson', 'student', 'student', 'student', 1).lastInsertRowid;
+  const student2Id = insertUser.run('Bob Williams', 'student2', 'student2', 'student', 1).lastInsertRowid;
 
   // Enroll students in classes
   const insertEnrollment = db.prepare('INSERT INTO enrollments (student_id, class_id) VALUES (?, ?)');
