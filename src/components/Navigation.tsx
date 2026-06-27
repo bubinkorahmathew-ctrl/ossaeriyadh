@@ -15,7 +15,7 @@ export default function Navigation({ userRole, userName }: NavigationProps) {
           <span>OSSAE RIYADH DISTRICT Edu PORTAL</span>
         </Link>
 
-        {userRole && (
+        {userRole ? (
           <div className={styles.userSection}>
             <div className={styles.userInfo}>
               <span className={styles.userName}>{userName}</span>
@@ -23,6 +23,12 @@ export default function Navigation({ userRole, userName }: NavigationProps) {
             </div>
             <Link href="/logout" className={styles.logoutLink}>
               Logout
+            </Link>
+          </div>
+        ) : (
+          <div className={styles.userSection}>
+            <Link href="/login" className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>
+              Login
             </Link>
           </div>
         )}
