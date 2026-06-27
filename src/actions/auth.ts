@@ -1,0 +1,48 @@
+'use server';
+
+import { cookies } from 'next/headers';
+import db from '@/lib/db';
+import { redirect } from 'next/navigation';
+
+export async function login(formData: FormData) {
+  const userId = formData.get('userId');
+  if (!userId) return;
+
+  const user = db.prepare('SELECT id, name, role FROM users WHERE id = ?').get(userId) as { id: number, name: string, role: string };
+  
+  if (user) {
+    const cookieStore = await cookies();
+    cookieStore.set('user_id', user.id.toString());
+    cookieStore.set('user_role', user.role);
+    cookieStore.set('user_name', user.name);
+    
+    if (user.role === 'teacher') {
+      redirect('/teacher');
+    } else {
+      redirect('/student');
+    }
+  }
+}
+
+export async function logout() {
+  const cookieStore = await cookies();
+  cookieStore.delete('user_id');
+  cookieStore.delete('user_role');
+  cookieStore.delete('user_name');
+  redirect('/');
+}
+
+export async function getUser() {
+  const cookieStore = await cookies();
+  const userId = cookieStore.get('user_id')?.value;
+  const userRole = cookieStore.get('user_role')?.value;
+  const userName = cookieStore.get('user_name')?.value;
+
+  if (!userId || !userRole) return null;
+
+  return {
+    id: parseInt(userId, 10),
+    role: userRole as 'teacher' | 'student',
+    name: userName || ''
+  };
+}

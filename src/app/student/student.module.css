@@ -1,0 +1,115 @@
+.dashboard {
+  padding: 2rem 0;
+}
+
+.title {
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: #fff;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.emptyState {
+  margin-top: 1.5rem;
+  color: #a0a3b0;
+  font-style: italic;
+}
+
+.classList {
+  list-style: none;
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.classItem {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border: 1px solid var(--card-border);
+}
+
+.teacherName {
+  font-size: 0.875rem;
+  color: #a0a3b0;
+  margin-top: 0.5rem;
+}
+
+.docList {
+  list-style: none;
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.docItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border: 1px solid var(--card-border);
+  gap: 1rem;
+}
+
+.docInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.docClassBadge {
+  align-self: flex-start;
+  background: rgba(0, 240, 255, 0.15);
+  color: var(--primary);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.docTitle {
+  font-size: 1.25rem;
+  color: #fff;
+}
+
+.docDesc {
+  color: #b0b3c0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.docMeta {
+  font-size: 0.8rem;
+  color: #7a7d8c;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .docItem {
+    flex-direction: column;
+  }
+  
+  .docItem > a {
+    align-self: stretch;
+    text-align: center;
+  }
+}
