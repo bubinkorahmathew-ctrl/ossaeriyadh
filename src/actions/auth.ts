@@ -56,7 +56,9 @@ export async function getUser() {
       id: user.id,
       role: user.role as 'teacher' | 'student' | 'admin' | 'head_master',
       name: user.name,
-      sunday_school_id: user.sunday_school_id || null
+      sunday_school_id: user.sunday_school_id || null,
+      class_id: user.class_id || null,
+      teacher_id: user.teacher_id || null
     };
   } catch (error) {
     return null;

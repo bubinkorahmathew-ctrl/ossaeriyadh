@@ -2,16 +2,14 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 
-// Initialize the database connection
-// In a real Next.js app, we should be careful with SQLite in serverless environments,
-// but for a local prototype or a long-running Node server, this works perfectly.
 const dbPath = path.join(process.cwd(), 'portal.db');
 const isFirstRun = !fs.existsSync(dbPath);
 
 const db = new Database(dbPath);
 
-// Initialize schema and seed data if this is the first run
 if (isFirstRun) {
+  console.log("Initializing database schema...");
+
   db.exec(`
     CREATE TABLE IF NOT EXISTS sunday_schools (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -29,15 +27,22 @@ if (isFirstRun) {
       username TEXT UNIQUE NOT NULL,
       password TEXT NOT NULL,
       role TEXT NOT NULL CHECK(role IN ('teacher', 'student', 'admin', 'head_master')),
+      
+      -- Hierarchical fields
       sunday_school_id INTEGER,
-      FOREIGN KEY(sunday_school_id) REFERENCES sunday_schools(id)
-    );
-
-    CREATE TABLE IF NOT EXISTS enrollments (
-      student_id INTEGER NOT NULL,
-      class_id INTEGER NOT NULL,
-      PRIMARY KEY (student_id, class_id),
-      FOREIGN KEY(student_id) REFERENCES users(id),
+      headmaster_id INTEGER,
+      teacher_id INTEGER,
+      class_id INTEGER,
+      
+      -- Student-specific data fields
+      dob TEXT,
+      parents_name TEXT,
+      contact_number TEXT,
+      other_activity TEXT,
+      
+      FOREIGN KEY(sunday_school_id) REFERENCES sunday_schools(id),
+      FOREIGN KEY(headmaster_id) REFERENCES users(id),
+      FOREIGN KEY(teacher_id) REFERENCES users(id),
       FOREIGN KEY(class_id) REFERENCES classes(id)
     );
 
@@ -72,24 +77,36 @@ if (isFirstRun) {
   }
 
   // Create Users with demo credentials
-  const insertUser = db.prepare('INSERT INTO users (name, username, password, role, sunday_school_id) VALUES (?, ?, ?, ?, ?)');
+  const insertUser = db.prepare(`
+    INSERT INTO users (
+      name, username, password, role, 
+      sunday_school_id, headmaster_id, teacher_id, class_id,
+      dob, parents_name, contact_number, other_activity
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
   
   // Admin has no specific sunday school
-  const adminId = insertUser.run('System Admin', 'admin', 'admin', 'admin', null).lastInsertRowid;
+  const adminId = insertUser.run('System Admin', 'admin', 'admin', 'admin', null, null, null, null, null, null, null, null).lastInsertRowid;
   
-  // Assign to Sunday School 1
-  const headMasterId = insertUser.run('Principal Johnson', 'headmaster', 'headmaster', 'head_master', 1).lastInsertRowid;
-  // Let's allow either "headmaster" or "head master" as password for headmaster by just matching it later or relying on what they type. The DB has 'headmaster'.
+  // Head Master assigned to Sunday School 1
+  const headMasterId = insertUser.run('Principal Johnson', 'headmaster', 'headmaster', 'head_master', 1, null, null, null, null, null, null, null).lastInsertRowid;
   
-  const teacherId = insertUser.run('Mr. Smith', 'teacher', 'teacher', 'teacher', 1).lastInsertRowid;
-  const student1Id = insertUser.run('Alice Johnson', 'student', 'student', 'student', 1).lastInsertRowid;
-  const student2Id = insertUser.run('Bob Williams', 'student2', 'student2', 'student', 1).lastInsertRowid;
+  // Teacher assigned under Head Master (and Sunday School 1)
+  const teacherId = insertUser.run('Mr. Smith', 'teacher', 'teacher', 'teacher', 1, headMasterId, null, null, null, null, null, null).lastInsertRowid;
+  
+  // Students assigned under Teacher and Class (and Sunday School 1)
+  // Assuming Class ID 2 = Class 1, Class ID 3 = Class 2
+  const student1Id = insertUser.run(
+    'Alice Johnson', 'student', 'student', 'student', 
+    1, null, teacherId, 2, 
+    '2015-05-12', 'Mr. & Mrs. Johnson', '123-456-7890', 'Choir'
+  ).lastInsertRowid;
 
-  // Enroll students in classes
-  const insertEnrollment = db.prepare('INSERT INTO enrollments (student_id, class_id) VALUES (?, ?)');
-  // Assuming Class ID 1 = Jesus Kid, 2 = Class 1, etc.
-  insertEnrollment.run(student1Id, 2); // Class 1
-  insertEnrollment.run(student2Id, 3); // Class 2
+  const student2Id = insertUser.run(
+    'Bob Williams', 'student2', 'student2', 'student', 
+    1, null, teacherId, 3, 
+    '2014-11-20', 'Mr. Williams', '098-765-4321', 'Altar Boy'
+  ).lastInsertRowid;
 }
 
 export default db;

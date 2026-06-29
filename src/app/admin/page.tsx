@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getUser } from '@/actions/auth';
-import { createUser, createClass } from '@/actions/admin';
+import { createSundaySchool, createHeadMaster, createTeacher, createStudent } from '@/actions/admin';
 import db from '@/lib/db';
 import styles from './admin.module.css';
 
@@ -11,82 +11,200 @@ export default async function AdminDashboard() {
     redirect('/login');
   }
 
-  const users = db.prepare('SELECT * FROM users').all() as { id: number, name: string, role: string }[];
-  const classes = db.prepare(`
-    SELECT classes.*, users.name as teacher_name 
-    FROM classes 
-    LEFT JOIN users ON classes.teacher_id = users.id
-  `).all() as { id: number, name: string, teacher_id: number, teacher_name: string }[];
+  const sundaySchools = db.prepare('SELECT * FROM sunday_schools').all() as { id: number, name: string }[];
+  const users = db.prepare(`
+    SELECT u.*, 
+      ss.name as ss_name, 
+      hm.name as hm_name, 
+      t.name as t_name, 
+      c.name as class_name
+    FROM users u
+    LEFT JOIN sunday_schools ss ON u.sunday_school_id = ss.id
+    LEFT JOIN users hm ON u.headmaster_id = hm.id
+    LEFT JOIN users t ON u.teacher_id = t.id
+    LEFT JOIN classes c ON u.class_id = c.id
+  `).all() as any[];
   
+  const classes = db.prepare('SELECT * FROM classes').all() as { id: number, name: string }[];
+
+  const headMasters = users.filter(u => u.role === 'head_master');
   const teachers = users.filter(u => u.role === 'teacher');
+  const students = users.filter(u => u.role === 'student');
 
   return (
     <div className={styles.main}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Admin Dashboard</h1>
-        <p className={styles.subtitle}>Manage users and classes across the portal.</p>
+        <h1 className={styles.title}>Admin Hierarchical Dashboard</h1>
+        <p className={styles.subtitle}>Manage schools, head masters, teachers, and students.</p>
       </header>
 
       <div className={styles.grid}>
+        
+        {/* 1. Add Sunday School */}
         <div className="glass-card">
-          <h2>Create New User</h2>
-          <form action={createUser} className={styles.form}>
+          <h2>1. Add Sunday School</h2>
+          <form action={createSundaySchool} className={styles.form}>
+            <div className="form-group">
+              <label className="form-label">School Name</label>
+              <input type="text" name="name" className="form-input" required placeholder="e.g., Sunday School 7" />
+            </div>
+            <button type="submit" className="btn-primary" style={{ width: '100%' }}>Create Sunday School</button>
+          </form>
+
+          <h3 style={{ marginTop: '2rem' }}>Current Schools</h3>
+          <ul style={{ paddingLeft: '1rem', color: '#a0a3b0' }}>
+            {sundaySchools.map(ss => <li key={ss.id}>{ss.name}</li>)}
+          </ul>
+        </div>
+
+        {/* 2. Add Head Master */}
+        <div className="glass-card">
+          <h2>2. Add Head Master</h2>
+          <form action={createHeadMaster} className={styles.form}>
             <div className="form-group">
               <label className="form-label">Full Name</label>
-              <input type="text" name="name" className="form-input" required placeholder="John Doe" />
+              <input type="text" name="name" className="form-input" required />
             </div>
             <div className="form-group">
-              <label className="form-label">Role</label>
-              <select name="role" className="form-input" required>
-                <option value="student">Student</option>
-                <option value="teacher">Teacher</option>
-                <option value="head_master">Head Master</option>
-                <option value="admin">Admin</option>
+              <label className="form-label">Username</label>
+              <input type="text" name="username" className="form-input" required />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Password</label>
+              <input type="password" name="password" className="form-input" required />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Assign to Sunday School</label>
+              <select name="sundaySchoolId" className="form-input" required>
+                <option value="">-- Select Sunday School --</option>
+                {sundaySchools.map(ss => <option key={ss.id} value={ss.id}>{ss.name}</option>)}
               </select>
             </div>
-            <button type="submit" className="btn-primary" style={{ width: '100%' }}>Create User</button>
+            <button type="submit" className="btn-primary" style={{ width: '100%' }}>Create Head Master</button>
           </form>
 
-          <h2 style={{ marginTop: '2rem' }}>Users ({users.length})</h2>
-          <div className={styles.list}>
-            {users.map(u => (
-              <div key={u.id} className={styles.listItem}>
-                <span className={styles.itemName}>{u.name}</span>
-                <span className={styles.itemBadge}>{u.role}</span>
-              </div>
-            ))}
-          </div>
+          <h3 style={{ marginTop: '2rem' }}>Current Head Masters</h3>
+          <ul style={{ paddingLeft: '1rem', color: '#a0a3b0', fontSize: '0.9rem' }}>
+            {headMasters.map(hm => <li key={hm.id}>{hm.name} ({hm.ss_name})</li>)}
+          </ul>
         </div>
 
+        {/* 3. Add Teacher */}
         <div className="glass-card">
-          <h2>Create New Class</h2>
-          <form action={createClass} className={styles.form}>
+          <h2>3. Add Teacher</h2>
+          <form action={createTeacher} className={styles.form}>
             <div className="form-group">
-              <label className="form-label">Class Name</label>
-              <input type="text" name="name" className="form-input" required placeholder="Biology 101" />
+              <label className="form-label">Full Name</label>
+              <input type="text" name="name" className="form-input" required />
             </div>
             <div className="form-group">
-              <label className="form-label">Assign Teacher</label>
-              <select name="teacherId" className="form-input" required>
-                <option value="">-- Select a Teacher --</option>
-                {teachers.map(t => (
-                  <option key={t.id} value={t.id}>{t.name}</option>
-                ))}
+              <label className="form-label">Username</label>
+              <input type="text" name="username" className="form-input" required />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Password</label>
+              <input type="password" name="password" className="form-input" required />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Assign under Head Master</label>
+              <select name="headMasterId" className="form-input" required>
+                <option value="">-- Select Head Master --</option>
+                {headMasters.map(hm => <option key={hm.id} value={hm.id}>{hm.name} ({hm.ss_name})</option>)}
               </select>
             </div>
-            <button type="submit" className="btn-primary" style={{ width: '100%' }}>Create Class</button>
+            <button type="submit" className="btn-primary" style={{ width: '100%' }}>Create Teacher</button>
           </form>
 
-          <h2 style={{ marginTop: '2rem' }}>Classes ({classes.length})</h2>
-          <div className={styles.list}>
-            {classes.map(c => (
-              <div key={c.id} className={styles.listItem}>
-                <span className={styles.itemName}>{c.name}</span>
-                <span className={styles.itemBadge}>Teacher: {c.teacher_name}</span>
-              </div>
-            ))}
-          </div>
+          <h3 style={{ marginTop: '2rem' }}>Current Teachers</h3>
+          <ul style={{ paddingLeft: '1rem', color: '#a0a3b0', fontSize: '0.9rem' }}>
+            {teachers.map(t => <li key={t.id}>{t.name} (Under: {t.hm_name})</li>)}
+          </ul>
         </div>
+
+        {/* 4. Add Student */}
+        <div className="glass-card">
+          <h2>4. Add Student</h2>
+          <form action={createStudent} className={styles.form}>
+            <div className="form-group">
+              <label className="form-label">Full Name</label>
+              <input type="text" name="name" className="form-input" required />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Username</label>
+              <input type="text" name="username" className="form-input" required />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Password</label>
+              <input type="password" name="password" className="form-input" required />
+            </div>
+            
+            <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '1.5rem 0' }} />
+
+            <div className="form-group">
+              <label className="form-label">Date of Birth</label>
+              <input type="date" name="dob" className="form-input" />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Parents Name</label>
+              <input type="text" name="parentsName" className="form-input" />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Contact Number</label>
+              <input type="text" name="contactNumber" className="form-input" />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Other Activity</label>
+              <input type="text" name="otherActivity" className="form-input" placeholder="e.g. Altar Boy, Choir" />
+            </div>
+
+            <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '1.5rem 0' }} />
+
+            <div className="form-group">
+              <label className="form-label">Assign under Teacher</label>
+              <select name="teacherId" className="form-input" required>
+                <option value="">-- Select Teacher --</option>
+                {teachers.map(t => <option key={t.id} value={t.id}>{t.name} ({t.ss_name})</option>)}
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Assign Class</label>
+              <select name="classId" className="form-input" required>
+                <option value="">-- Select Class --</option>
+                {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+            <button type="submit" className="btn-primary" style={{ width: '100%' }}>Create Student</button>
+          </form>
+        </div>
+
+      </div>
+
+      <div style={{ marginTop: '4rem' }} className="glass-card">
+        <h2>Students Roster</h2>
+        <table style={{ width: '100%', textAlign: 'left', marginTop: '1rem', color: '#fff', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ borderBottom: '1px solid #333' }}>
+              <th style={{ padding: '0.5rem' }}>Name</th>
+              <th style={{ padding: '0.5rem' }}>School</th>
+              <th style={{ padding: '0.5rem' }}>Class</th>
+              <th style={{ padding: '0.5rem' }}>Teacher</th>
+              <th style={{ padding: '0.5rem' }}>Parents</th>
+              <th style={{ padding: '0.5rem' }}>Contact</th>
+            </tr>
+          </thead>
+          <tbody>
+            {students.map(s => (
+              <tr key={s.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                <td style={{ padding: '0.5rem' }}>{s.name}</td>
+                <td style={{ padding: '0.5rem' }}>{s.ss_name}</td>
+                <td style={{ padding: '0.5rem' }}>{s.class_name}</td>
+                <td style={{ padding: '0.5rem' }}>{s.t_name}</td>
+                <td style={{ padding: '0.5rem' }}>{s.parents_name}</td>
+                <td style={{ padding: '0.5rem' }}>{s.contact_number}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

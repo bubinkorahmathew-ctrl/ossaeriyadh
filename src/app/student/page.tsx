@@ -10,27 +10,25 @@ export default async function StudentDashboard() {
     redirect('/');
   }
 
-  // Fetch classes this student is enrolled in
-  const classes = db.prepare(`
-    SELECT c.id, c.name
-    FROM classes c
-    JOIN enrollments e ON c.id = e.class_id
-    WHERE e.student_id = ?
-  `).all(user.id) as { id: number, name: string }[];
+  // Fetch the class this student is enrolled in
+  let classes: { id: number, name: string }[] = [];
+  if (user.class_id) {
+    const studentClass = db.prepare('SELECT id, name FROM classes WHERE id = ?').get(user.class_id) as { id: number, name: string };
+    if (studentClass) {
+      classes.push(studentClass);
+    }
+  }
 
-  const classIds = classes.map(c => c.id);
-  
   let documents: { id: number, title: string, description: string, file_path: string, created_at: string, class_id: number, teacher_name: string }[] = [];
   
-  if (classIds.length > 0) {
-    const placeholders = classIds.map(() => '?').join(',');
+  if (user.class_id) {
     documents = db.prepare(`
       SELECT d.id, d.title, d.description, d.file_path, d.created_at, d.class_id, u.name as teacher_name
       FROM documents d
       JOIN users u ON d.uploaded_by = u.id
-      WHERE d.class_id IN (${placeholders}) AND d.sunday_school_id = ?
+      WHERE d.class_id = ? AND d.sunday_school_id = ?
       ORDER BY d.created_at DESC
-    `).all(...classIds, user.sunday_school_id) as any[];
+    `).all(user.class_id, user.sunday_school_id) as any[];
   }
 
   return (
