@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getUser } from '@/actions/auth';
-import { createSundaySchool, createHeadMaster, createTeacher, createStudent } from '@/actions/admin';
+import { createSundaySchool, createHeadMaster, createTeacher, createStudent, bulkUploadTeachers, bulkUploadStudents } from '@/actions/admin';
 import db from '@/lib/db';
 import styles from './admin.module.css';
 
