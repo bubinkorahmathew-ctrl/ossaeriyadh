@@ -99,3 +99,83 @@ export async function createStudent(formData: FormData) {
 
   revalidatePath('/admin');
 }
+
+import Papa from 'papaparse';
+
+export async function bulkUploadTeachers(formData: FormData) {
+  const user = await getUser();
+  if (!user || user.role !== 'admin') throw new Error('Unauthorized');
+
+  const file = formData.get('file') as File;
+  if (!file) return;
+
+  const text = await file.text();
+  const result = Papa.parse(text, { header: true, skipEmptyLines: true });
+  
+  const insertStmt = db.prepare(`
+    INSERT INTO users (name, username, password, role, headmaster_id, sunday_school_id)
+    VALUES (?, ?, ?, 'teacher', ?, ?)
+  `);
+
+  for (const row of result.data as any[]) {
+    try {
+      if (!row.name || !row.username || !row.password || !row.headmaster_id) continue;
+      
+      const headMasterId = parseInt(row.headmaster_id, 10);
+      const headMaster = db.prepare('SELECT sunday_school_id FROM users WHERE id = ? AND role = "head_master"').get(headMasterId) as { sunday_school_id: number };
+      
+      if (headMaster) {
+        insertStmt.run(row.name, row.username, row.password, headMasterId, headMaster.sunday_school_id);
+      }
+    } catch (e) {
+      // Skip duplicate usernames or invalid rows silently
+      console.error(e);
+    }
+  }
+
+  revalidatePath('/admin');
+}
+
+export async function bulkUploadStudents(formData: FormData) {
+  const user = await getUser();
+  if (!user || user.role !== 'admin') throw new Error('Unauthorized');
+
+  const file = formData.get('file') as File;
+  if (!file) return;
+
+  const text = await file.text();
+  const result = Papa.parse(text, { header: true, skipEmptyLines: true });
+  
+  const insertStmt = db.prepare(`
+    INSERT INTO users (
+      name, username, password, role, 
+      teacher_id, class_id, sunday_school_id,
+      dob, parents_name, contact_number, other_activity
+    )
+    VALUES (?, ?, ?, 'student', ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  for (const row of result.data as any[]) {
+    try {
+      if (!row.name || !row.username || !row.password || !row.teacher_id || !row.class_id) continue;
+      
+      const teacherId = parseInt(row.teacher_id, 10);
+      const classId = parseInt(row.class_id, 10);
+      
+      const teacher = db.prepare('SELECT sunday_school_id FROM users WHERE id = ? AND role = "teacher"').get(teacherId) as { sunday_school_id: number };
+      
+      if (teacher) {
+        insertStmt.run(
+          row.name, row.username, row.password, 
+          teacherId, classId, teacher.sunday_school_id,
+          row.dob || null, row.parents_name || null, row.contact_number || null, row.other_activity || null
+        );
+      }
+    } catch (e) {
+      // Skip duplicate usernames or invalid rows silently
+      console.error(e);
+    }
+  }
+
+  revalidatePath('/admin');
+}

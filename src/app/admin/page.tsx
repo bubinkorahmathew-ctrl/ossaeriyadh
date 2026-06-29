@@ -206,6 +206,50 @@ export default async function AdminDashboard() {
           </tbody>
         </table>
       </div>
+      <div style={{ marginTop: '4rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
+        <div className="glass-card">
+          <h2>Bulk Upload Teachers (CSV)</h2>
+          <p style={{ color: '#a0a3b0', marginBottom: '1rem', fontSize: '0.9rem' }}>
+            <strong>Expected Columns:</strong> <code>name, username, password, headmaster_id</code>
+          </p>
+          <form action={bulkUploadTeachers} className={styles.form}>
+            <div className="form-group">
+              <input type="file" name="file" accept=".csv" className="form-input" required />
+            </div>
+            <button type="submit" className="btn-primary" style={{ width: '100%' }}>Upload Teachers</button>
+          </form>
+          
+          <h4 style={{ marginTop: '1.5rem', marginBottom: '0.5rem' }}>Reference: Head Master IDs</h4>
+          <ul style={{ paddingLeft: '1rem', color: '#a0a3b0', fontSize: '0.85rem' }}>
+            {headMasters.map(hm => <li key={hm.id}>ID <strong>{hm.id}</strong>: {hm.name} ({hm.ss_name})</li>)}
+          </ul>
+        </div>
+
+        <div className="glass-card">
+          <h2>Bulk Upload Students (CSV)</h2>
+          <p style={{ color: '#a0a3b0', marginBottom: '1rem', fontSize: '0.9rem' }}>
+            <strong>Expected Columns:</strong><br />
+            <code>name, username, password, teacher_id, class_id, dob, parents_name, contact_number, other_activity</code>
+          </p>
+          <form action={bulkUploadStudents} className={styles.form}>
+            <div className="form-group">
+              <input type="file" name="file" accept=".csv" className="form-input" required />
+            </div>
+            <button type="submit" className="btn-primary" style={{ width: '100%' }}>Upload Students</button>
+          </form>
+
+          <h4 style={{ marginTop: '1.5rem', marginBottom: '0.5rem' }}>Reference: Teacher & Class IDs</h4>
+          <div style={{ display: 'flex', gap: '2rem' }}>
+            <ul style={{ paddingLeft: '1rem', color: '#a0a3b0', fontSize: '0.85rem', flex: 1 }}>
+              {teachers.map(t => <li key={t.id}>Teacher <strong>{t.id}</strong>: {t.name}</li>)}
+            </ul>
+            <ul style={{ paddingLeft: '1rem', color: '#a0a3b0', fontSize: '0.85rem', flex: 1 }}>
+              {classes.slice(0, 5).map(c => <li key={c.id}>Class <strong>{c.id}</strong>: {c.name}</li>)}
+              <li><em>...and so on</em></li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
