@@ -1,15 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Outfit:wght@500;700&display=swap');
 
 :root {
-  --background: #0a0b10;
-  --foreground: #f0f0f5;
-  --primary: #00f0ff;
-  --primary-hover: #00d5ff;
-  --secondary: #7000ff;
-  --card-bg: rgba(20, 22, 30, 0.6);
+  /* Regal Dark Theme Colors */
+  --background: #0D0E12;       /* Deepest Charcoal */
+  --foreground: #F7FAFC;       /* Soft crisp white */
+  --primary: #FFBF00;          /* Classic Gold */
+  --primary-hover: #E6AC00;
+  --secondary: #800020;        /* Deep Maroon */
+  --secondary-hover: #A30029;
+  
+  --card-bg: rgba(26, 32, 44, 0.4);
   --card-border: rgba(255, 255, 255, 0.08);
-  --danger: #ff3366;
-  --success: #00e676;
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  --card-shadow-hover: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 191, 0, 0.1);
+  
+  --danger: #E53E3E;
+  --success: #38A169;
 }
 
 html,
@@ -22,8 +28,8 @@ body {
 body {
   background-color: var(--background);
   background-image: 
-    radial-gradient(at 0% 0%, rgba(112, 0, 255, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(0, 240, 255, 0.1) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, rgba(128, 0, 32, 0.2) 0px, transparent 40%),
+    radial-gradient(at 100% 100%, rgba(255, 191, 0, 0.1) 0px, transparent 40%);
   background-attachment: fixed;
   color: var(--foreground);
   font-family: 'Inter', sans-serif;
@@ -37,10 +43,11 @@ body {
   margin: 0;
 }
 
+/* Elegant Headings */
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Outfit', sans-serif;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-family: 'Playfair Display', serif;
+  color: #FFFFFF;
+  letter-spacing: 0.01em;
 }
 
 a {
@@ -60,68 +67,85 @@ button {
   outline: none;
 }
 
-/* Glassmorphism Card Utility */
+/* Premium Card Utility */
 .glass-card {
   background: var(--card-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--card-border);
-  border-radius: 16px;
-  padding: 24px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, border-color 0.4s ease;
 }
 
 .glass-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(0, 240, 255, 0.1);
+  box-shadow: var(--card-shadow-hover);
+  border-color: rgba(255, 191, 0, 0.3);
 }
 
 /* Button Utilities */
 .btn-primary {
-  background: linear-gradient(135deg, var(--secondary), var(--primary));
-  color: #fff;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  background: var(--secondary);
+  color: #FFFFFF;
+  padding: 12px 28px;
+  border-radius: 6px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  display: inline-block;
+  text-align: center;
+  border: 1px solid transparent;
 }
 
 .btn-primary:hover {
-  opacity: 0.9;
+  background: var(--secondary-hover);
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(128, 0, 32, 0.4);
+  color: #FFFFFF;
 }
 
 /* Forms */
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .form-label {
   display: block;
   margin-bottom: 8px;
   font-weight: 500;
-  color: #b0b3c0;
+  color: #A0AEC0;
+  font-size: 0.95rem;
 }
 
 .form-input {
   width: 100%;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
-  color: #fff;
+  padding: 14px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #FFFFFF;
   font-family: 'Inter', sans-serif;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.2s ease;
+  font-size: 1rem;
 }
 
 .form-input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.2);
+  box-shadow: 0 0 0 3px rgba(255, 191, 0, 0.15);
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
+}
+
+/* Overriding Next.js default dark theme select option styles */
+select.form-input option {
+  background: #1A202C;
+  color: #FFFFFF;
 }

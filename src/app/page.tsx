@@ -7,28 +7,17 @@ export default function LandingPage() {
       {/* 2. Hero Section */}
       <section className={styles.heroSection}>
         <div className={styles.heroContent}>
-          <h1 className={styles.title}>Nurturing Faith. Empowering Minds. Embracing Technology.</h1>
+          <h1 className={styles.title}>Nurturing Faith.<br/>Empowering Minds.<br/>Embracing Technology.</h1>
           <p className={styles.subtitle}>
             Welcome to the official Smart Portal of the Orthodox Syrian Sunday School Association of the East (OSSAE) – Riyadh Region. Streamlining spiritual education for our teachers, students, and parents under the prayerful guidance of the Thrissur Diocese.
           </p>
           <div className={styles.ctaGroup}>
-            <Link href="/login" className={styles.btnPrimary}>
+            <Link href="/login" className="btn-primary">
               Access Teacher Portal
             </Link>
-            <Link href="/login" className={styles.btnSecondary}>
+            <Link href="/login" className="btn-secondary">
               Access Student Portal
             </Link>
-          </div>
-        </div>
-        <div className={styles.heroGraphic}>
-          <div className={styles.floatingCard1}>
-            <div className={styles.cardHeader}></div>
-            <div className={styles.cardBody}></div>
-          </div>
-          <div className={styles.floatingCard2}>
-            <div className={styles.cardHeader}></div>
-            <div className={styles.cardBody}></div>
-            <div className={styles.cardBody}></div>
           </div>
         </div>
       </section>

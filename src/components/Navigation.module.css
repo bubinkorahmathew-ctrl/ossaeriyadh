@@ -1,29 +1,30 @@
 .header {
-  background: rgba(10, 11, 16, 0.8);
+  background: rgba(13, 14, 18, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--card-border);
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .navContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 72px;
+  height: 80px;
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   text-decoration: none;
 }
 
 .logoImage {
-  height: 44px;
+  height: 50px;
   width: auto;
   object-fit: contain;
 }
@@ -34,66 +35,87 @@
 }
 
 .mainTitle {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.25rem;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
   font-weight: 700;
-  color: #fff;
-  line-height: 1.2;
+  color: #FFFFFF;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
 }
 
 .subTitle {
-  font-size: 0.8rem;
-  color: #a0a3b0;
+  font-size: 0.85rem;
+  color: #A0AEC0;
   font-weight: 500;
+  letter-spacing: 0.5px;
 }
 
 .centerLinks {
   display: flex;
-  gap: 32px;
+  gap: 36px;
   align-items: center;
 }
 
 .centerLinks a {
-  color: #a0a3b0;
+  color: #E2E8F0;
   font-size: 0.95rem;
   font-weight: 500;
   text-decoration: none;
   transition: color 0.2s ease;
+  position: relative;
+}
+
+.centerLinks a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: var(--primary);
+  transition: width 0.3s ease;
 }
 
 .centerLinks a:hover {
-  color: #fff;
+  color: var(--primary);
+}
+
+.centerLinks a:hover::after {
+  width: 100%;
 }
 
 .teacherBtn {
-  background-color: #800020; /* Deep Maroon */
+  background-color: var(--secondary);
   color: white;
-  padding: 8px 16px;
+  padding: 10px 20px;
   border-radius: 6px;
   font-size: 0.9rem;
   font-weight: 600;
   text-decoration: none;
-  transition: background-color 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .teacherBtn:hover {
-  background-color: #5e0017;
+  background-color: var(--secondary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(128, 0, 32, 0.4);
 }
 
 .studentBtn {
   background-color: transparent;
-  color: #FFBF00; /* Gold/Amber */
-  border: 1px solid #FFBF00;
-  padding: 8px 16px;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  padding: 10px 20px;
   border-radius: 6px;
   font-size: 0.9rem;
   font-weight: 600;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .studentBtn:hover {
   background-color: rgba(255, 191, 0, 0.1);
+  transform: translateY(-1px);
 }
 
 .userSection {
@@ -109,25 +131,26 @@
 }
 
 .userName {
-  font-weight: 500;
-  color: #fff;
+  font-weight: 600;
+  color: #FFFFFF;
 }
 
 .userRoleBadge {
-  background: rgba(112, 0, 255, 0.2);
-  color: #b380ff;
-  border: 1px solid rgba(112, 0, 255, 0.3);
-  padding: 4px 10px;
+  background: rgba(255, 191, 0, 0.15);
+  color: var(--primary);
+  border: 1px solid rgba(255, 191, 0, 0.3);
+  padding: 4px 12px;
   border-radius: 20px;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .logoutLink {
   font-size: 0.875rem;
-  color: #a0a3b0;
+  font-weight: 500;
+  color: #A0AEC0;
   transition: color 0.2s ease;
 }
 
